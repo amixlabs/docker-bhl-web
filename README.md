@@ -6,5 +6,11 @@ See the Hub page for the full readme on how to use the Docker image and for info
 Common build usage:
 
 ```bash
-docker build -t bhl-web:latest -t bhl-web:co5v1 .
+docker build \
+  --build-arg "http_proxy=$http_proxy" \
+  --build-arg "https_proxy=$https_proxy" \
+  --build-arg "no_proxy=$no_proxy" \
+  -t bhl-web \
+  -t bhl-web:co5v2 \
+  .
 ```

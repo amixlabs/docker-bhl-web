@@ -2,6 +2,14 @@
 
 setup() {
 	export http_proxy https_proxy
+	mkdir -p /var/cache/yum/{base,extras,updates}
+	echo "http://vault.centos.org/5.11/os/x86_64/" > /var/cache/yum/base/mirrorlist.txt
+	echo "http://vault.centos.org/5.11/extras/x86_64/" > /var/cache/yum/extras/mirrorlist.txt
+	echo "http://vault.centos.org/5.11/updates/x86_64/" > /var/cache/yum/updates/mirrorlist.txt
+	sed -i '/^gpgkey=/a exclude=*.i386' /etc/yum.repos.d/CentOS-Base.repo
+	# shellcheck disable=SC2016
+  sed -i 's/centos\/\$releasever/5.11/g' /etc/yum.repos.d/CentOS-Sources.repo
+	rm -f /etc/yum.repos.d/libselinux.repo
 }
 
 download() {
@@ -24,8 +32,8 @@ download() {
 		'https://www.dropbox.com/s/as47wy3g0y2yp41/iSeriesAccess-5.4.0-1.6.x86_64.rpm?dl=0'
 		'https://www.dropbox.com/s/3s8uhjh8isap4j3/freetds-stable.tgz?dl=0'
 	)
-  yum install -y curl &&
-  download_files
+	yum install -y curl &&
+	download_files
 }
 
 download_files() {
@@ -56,7 +64,8 @@ install_tools() {
 		gcc \
 		make \
 		yum-utils \
-		unzip
+		unzip \
+		tidy
 }
 
 install_odbc() {
@@ -182,16 +191,16 @@ install() {
 cleanup() {
 	yum clean all &&
 	rm -rf /tmp/* &&
-  find /var/tmp /var/cache /var/log -type f -delete
+	find /var/tmp /var/cache /var/log -type f -delete
 }
 
 main() {
-  cd /tmp/ || return 1
+	cd /tmp/ || return 1
 	setup &&
-  download &&
-  install &&
-  cleanup &&
-  mkdir /app
+	download &&
+	install &&
+	cleanup &&
+	mkdir /app
 }
 
 main "$@"
