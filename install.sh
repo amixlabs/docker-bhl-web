@@ -3,13 +3,17 @@
 setup() {
 	export http_proxy https_proxy
 	mkdir -p /var/cache/yum/{base,extras,updates}
-	echo "http://vault.centos.org/5.11/os/x86_64/" > /var/cache/yum/base/mirrorlist.txt
-	echo "http://vault.centos.org/5.11/extras/x86_64/" > /var/cache/yum/extras/mirrorlist.txt
-	echo "http://vault.centos.org/5.11/updates/x86_64/" > /var/cache/yum/updates/mirrorlist.txt
+	setup_cache
 	sed -i '/^gpgkey=/a exclude=*.i386' /etc/yum.repos.d/CentOS-Base.repo
 	# shellcheck disable=SC2016
   sed -i 's/centos\/\$releasever/5.11/g' /etc/yum.repos.d/CentOS-Sources.repo
 	rm -f /etc/yum.repos.d/libselinux.repo
+}
+
+setup_cache() {
+	echo "http://vault.centos.org/5.11/os/x86_64/" > /var/cache/yum/base/mirrorlist.txt
+	echo "http://vault.centos.org/5.11/extras/x86_64/" > /var/cache/yum/extras/mirrorlist.txt
+	echo "http://vault.centos.org/5.11/updates/x86_64/" > /var/cache/yum/updates/mirrorlist.txt
 }
 
 download() {
@@ -23,6 +27,7 @@ download() {
 		'fop-1.0-bin.zip'
 		'iSeriesAccess-5.4.0-1.6.x86_64.rpm'
 		'freetds-stable.tgz'
+		'json-1.2.1.tgz'
 	)
 	urls=(
 		'https://www.dropbox.com/s/6jz75afu3pvdzv8/oracle-instantclient-basic-10.2.0.5-1.x86_64.rpm?dl=0'
@@ -31,6 +36,7 @@ download() {
 		'https://www.dropbox.com/s/9ykm2bp7tg9ujp6/fop-1.0-bin.zip?dl=0'
 		'https://www.dropbox.com/s/as47wy3g0y2yp41/iSeriesAccess-5.4.0-1.6.x86_64.rpm?dl=0'
 		'https://www.dropbox.com/s/3s8uhjh8isap4j3/freetds-stable.tgz?dl=0'
+		'https://www.dropbox.com/s/orhdd5vp9e2k3v2/json-1.2.1.tgz?dl=0'
 	)
 	yum install -y curl &&
 	download_files
@@ -60,8 +66,10 @@ update() {
 }
 
 install_tools() {
+	# glic.i686 for bin/xlhtml
 	yum install -y \
 		gcc \
+		glibc.i686 \
 		make \
 		yum-utils \
 		unzip \
@@ -172,6 +180,21 @@ install_pdo_dblib() (
 	EOT
 )
 
+install_php_json() (
+	[[ -r /etc/php.d/json.ini && -r /usr/lib64/php/modules/json.so ]] && return 0
+	[[ -d json-1.2.1 ]] || tar xzvf json-1.2.1.tgz
+	cd json-1.2.1/ || return 1
+	# Compilando
+	phpize
+	./configure
+	make
+	make install
+	tee /etc/php.d/json.ini <<-"EOT"
+	; Enable json extension module
+	extension=json.so
+	EOT
+)
+
 install() {
 	update &&
 	install_tools &&
@@ -184,6 +207,7 @@ install() {
 	install_httpd &&
 	install_php &&
 	install_php_source &&
+	install_php_json &&
 	install_pdo_oci &&
 	install_pdo_dblib
 }
@@ -200,6 +224,7 @@ main() {
 	download &&
 	install &&
 	cleanup &&
+	setup_cache &&
 	mkdir /app
 }
 
