@@ -73,7 +73,10 @@ install_tools() {
 		make \
 		yum-utils \
 		unzip \
-		tidy
+		tidy \
+		xz \
+		rsync \
+		openssh-clients
 }
 
 install_odbc() {
@@ -195,6 +198,15 @@ install_php_json() (
 	EOT
 )
 
+install_nodejs() (
+	curl -o /tmp/node-v6.11.0-linux-x64.tar.xz 'https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz' &&
+	cd /opt/ &&
+	unxz /tmp/node-v6.11.0-linux-x64.tar.xz &&
+	tar xvf /tmp/node-v6.11.0-linux-x64.tar &&
+	ln -fs /opt/node-v6.11.0-linux-x64/bin/node /usr/local/bin/node &&
+	ln -fs /opt/node-v6.11.0-linux-x64/bin/npm /usr/local/bin/npm
+)
+
 install() {
 	update &&
 	install_tools &&
@@ -209,7 +221,8 @@ install() {
 	install_php_source &&
 	install_php_json &&
 	install_pdo_oci &&
-	install_pdo_dblib
+	install_pdo_dblib &&
+	install_nodejs
 }
 
 cleanup() {

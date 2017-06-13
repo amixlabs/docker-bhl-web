@@ -8,4 +8,6 @@ RUN ./install.sh
 
 WORKDIR /app
 EXPOSE 80
-ENTRYPOINT . /etc/sysconfig/httpd; /usr/sbin/apachectl -D FOREGROUND
+
+ADD entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["entrypoint.sh"]
