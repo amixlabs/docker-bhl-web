@@ -62,6 +62,7 @@ download_files() {
 }
 
 update() {
+	yum install -y epel-release
 	yum update -y
 }
 
@@ -143,7 +144,8 @@ install_php() {
 		php-xml \
 		php-ldap \
 		php-tidy \
-		php-devel
+		php-devel \
+		php-pecl-xdebug
 }
 
 install_php_source() (
