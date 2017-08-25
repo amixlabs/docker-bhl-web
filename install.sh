@@ -87,7 +87,7 @@ install_odbc() {
 }
 
 install_oracle() {
-	rpm -ivh oracle-instantclient-*.rpm
+	rpm -ih oracle-instantclient-*.rpm
 	(cd /usr/include/oracle/10.2.0.5 && ln -fs client64 client)
 	(cd /usr/lib/oracle/10.2.0.5 && ln -fs client64 client)
 }
@@ -95,11 +95,11 @@ install_oracle() {
 install_iseries() {
 	yum install -y compat-libstdc++-33
 	rpm -q iSeriesAccess ||
-	rpm -ivh iSeriesAccess-5.4.0-1.6.x86_64.rpm
+	rpm -ih iSeriesAccess-5.4.0-1.6.x86_64.rpm
 }
 
 install_freetds() (
-	[[ -d freetds-0.91 ]] || tar xzvf freetds-stable.tgz
+	[[ -d freetds-0.91 ]] || tar xzf freetds-stable.tgz
 	cd freetds-0.91/ || return 1
 	[[ -d /usr/local/include/freetds ]] || {
 		./configure --with-unixodbc=/usr/ --with-tdsver=7.0 &&
@@ -119,7 +119,7 @@ install_jre() {
 
 install_fop() (
 	[[ -d /usr/java/fop-1.0 ]] || {
-		unzip fop-1.0-bin.zip -d /usr/java/ || return 1
+		unzip -q fop-1.0-bin.zip -d /usr/java/ || return 1
 		cd /usr/java || return 1
 		ln -fs fop-1.0 fop
 		chmod +x /usr/java/fop/fop
@@ -152,8 +152,8 @@ install_php_source() (
 	[[ -d php/php-5.1.6 ]] && return 0
 	yumdownloader --source php
 	[[ -d php ]] || mkdir php && cd php || return 1
-	rpm2cpio ../php-5.1.6-45.el5_11.src.rpm | cpio -idmv --no-absolute-filenames
-	tar xzvf php-5.1.6.tar.gz
+	rpm2cpio ../php-5.1.6-45.el5_11.src.rpm | cpio -idm --no-absolute-filenames
+	tar xzf php-5.1.6.tar.gz
 )
 
 install_pdo_oci() (
@@ -192,7 +192,7 @@ install_phpunit() (
 
 install_php_json() (
 	[[ -r /etc/php.d/json.ini && -r /usr/lib64/php/modules/json.so ]] && return 0
-	[[ -d json-1.2.1 ]] || tar xzvf json-1.2.1.tgz
+	[[ -d json-1.2.1 ]] || tar xzf json-1.2.1.tgz
 	cd json-1.2.1/ || return 1
 	# Compilando
 	phpize
@@ -209,7 +209,7 @@ install_nodejs() (
 	curl -o "/tmp/node-$NODE_VERSION-linux-x64.tar.xz" "https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-linux-x64.tar.xz" &&
 	cd /opt/ &&
 	unxz "/tmp/node-$NODE_VERSION-linux-x64.tar.xz" &&
-	tar xvf "/tmp/node-$NODE_VERSION-linux-x64.tar"
+	tar xf "/tmp/node-$NODE_VERSION-linux-x64.tar"
 )
 
 install_disparity() {
