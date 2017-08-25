@@ -1,0 +1,20 @@
+sudo: required
+
+language: php
+
+services:
+- docker
+
+script:
+- docker build -t amixsi/bhl-web:latest .
+
+after_success:
+- if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
+    docker push amixsi/bhl-web;
+  fi
+
+branches:
+  only:
+  - master
+  - /^v\d+\.\d+(\.\d+)?(-\S*)?$/

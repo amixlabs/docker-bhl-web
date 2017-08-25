@@ -11,7 +11,6 @@ docker build \
   --build-arg "https_proxy=$https_proxy" \
   --build-arg "no_proxy=$no_proxy" \
   -t bhl-web \
-  -t bhl-web:co5v4 \
   .
 ```
 
@@ -19,5 +18,5 @@ Publish image:
 
 ```bash
 docker tag bhl-web:latest amixsi/bhl-web:latest
-docker tag bhl-web:co5v4 amixsi/bhl-web:co5v4
+docker push amixsi/bhl-web
 ```

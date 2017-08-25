@@ -6,7 +6,7 @@ setup() {
 	setup_cache
 	sed -i '/^gpgkey=/a exclude=*.i386' /etc/yum.repos.d/CentOS-Base.repo
 	# shellcheck disable=SC2016
-  sed -i 's/centos\/\$releasever/5.11/g' /etc/yum.repos.d/CentOS-Sources.repo
+  	sed -i 's/centos\/\$releasever/5.11/g' /etc/yum.repos.d/CentOS-Sources.repo
 	rm -f /etc/yum.repos.d/libselinux.repo
 }
 
@@ -185,6 +185,11 @@ install_pdo_dblib() (
 	EOT
 )
 
+install_phpunit() (
+	pear channel-update pear.php.net
+	pear install --alldeps PHPUnit2
+)
+
 install_php_json() (
 	[[ -r /etc/php.d/json.ini && -r /usr/lib64/php/modules/json.so ]] && return 0
 	[[ -d json-1.2.1 ]] || tar xzvf json-1.2.1.tgz
@@ -201,13 +206,15 @@ install_php_json() (
 )
 
 install_nodejs() (
-	curl -o /tmp/node-v6.11.0-linux-x64.tar.xz 'https://nodejs.org/dist/v6.11.0/node-v6.11.0-linux-x64.tar.xz' &&
+	curl -o "/tmp/node-$NODE_VERSION-linux-x64.tar.xz" "https://nodejs.org/dist/$NODE_VERSION/node-$NODE_VERSION-linux-x64.tar.xz" &&
 	cd /opt/ &&
-	unxz /tmp/node-v6.11.0-linux-x64.tar.xz &&
-	tar xvf /tmp/node-v6.11.0-linux-x64.tar &&
-	ln -fs /opt/node-v6.11.0-linux-x64/bin/node /usr/local/bin/node &&
-	ln -fs /opt/node-v6.11.0-linux-x64/bin/npm /usr/local/bin/npm
+	unxz "/tmp/node-$NODE_VERSION-linux-x64.tar.xz" &&
+	tar xvf "/tmp/node-$NODE_VERSION-linux-x64.tar"
 )
+
+install_disparity() {
+	npm install -g disparity
+}
 
 install() {
 	update &&
@@ -224,13 +231,14 @@ install() {
 	install_php_json &&
 	install_pdo_oci &&
 	install_pdo_dblib &&
-	install_nodejs
+	install_phpunit &&
+	install_nodejs &&
+	install_disparity
 }
 
 cleanup() {
 	yum clean all &&
-	rm -rf /tmp/* &&
-	find /var/tmp /var/cache /var/log -type f -delete
+	rm -rf /tmp/*
 }
 
 main() {
