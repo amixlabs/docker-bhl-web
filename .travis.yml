@@ -1,20 +1,18 @@
-sudo: required
+language: bash
+services: docker
 
-language: php
-
-services:
-- docker
+before_script:
+- docker build -t amixsi/bhl-web:latest -t amixsi/bhl-web:5.5 -t amixsi/bhl-web:5 .
 
 script:
-- docker build -t amixsi/bhl-web:latest .
+- docker run --rm -it amixsi/bhl-web bash --version
+- docker run --rm -it amixsi/bhl-web node --version
+- docker run --rm -it amixsi/bhl-web npm --version
+- docker run --rm -it amixsi/bhl-web httpd -v
+- docker run --rm -it amixsi/bhl-web php -v
+- docker run --rm -it -e JAVA_HOME=/usr/java/latest amixsi/bhl-web /usr/java/fop/fop -version
+- docker run --rm -it amixsi/bhl-web /opt/node/bin/disparity -v
 
 after_success:
-- if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD";
-    docker push amixsi/bhl-web;
-  fi
-
-branches:
-  only:
-  - master
-  - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+- docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+- docker push amixsi/bhl-web

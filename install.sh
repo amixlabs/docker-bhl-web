@@ -210,6 +210,7 @@ install_nodejs() (
 	cd /opt/ &&
 	unxz "/tmp/node-$NODE_VERSION-linux-x64.tar.xz" &&
 	tar xf "/tmp/node-$NODE_VERSION-linux-x64.tar"
+	ln -s /opt/node-$NODE_VERSION-linux-x64 /opt/node
 )
 
 install_disparity() {

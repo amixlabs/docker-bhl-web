@@ -3,7 +3,7 @@ FROM centos:5
 MAINTAINER edison@amixsi.com.br
 
 ENV NODE_VERSION v6.11.2
-ENV PATH $PATH:/opt/node-$NODE_VERSION-linux-x64/bin
+ENV PATH $PATH:/opt/node/bin
 
 ADD install.sh /tmp/
 WORKDIR /tmp
