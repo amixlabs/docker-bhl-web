@@ -159,6 +159,8 @@ install_php_source() (
 install_pdo_oci() (
 	[[ -r /etc/php.d/pdo_oci.ini && -r /usr/lib64/php/modules/pdo_oci.so ]] && return 0
 	cd php/php-5.1.6/ext/pdo_oci/ || return 1
+	# Remove WARNING: PDOStatement::fetch(): column X data was too large for buffer and was truncated to fit
+	sed -i '/column.*too large/d' oci_statement.c
 	phpize
 	./configure --with-pdo-oci=instantclient,/usr,10.2.0.5
 	make
@@ -210,7 +212,7 @@ install_nodejs() (
 	cd /opt/ &&
 	unxz "/tmp/node-$NODE_VERSION-linux-x64.tar.xz" &&
 	tar xf "/tmp/node-$NODE_VERSION-linux-x64.tar"
-	ln -s /opt/node-$NODE_VERSION-linux-x64 /opt/node
+	ln -s "/opt/node-$NODE_VERSION-linux-x64" /opt/node
 )
 
 install_disparity() {

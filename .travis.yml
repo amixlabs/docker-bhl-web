@@ -2,7 +2,7 @@ language: bash
 services: docker
 
 before_script:
-- docker build -t amixsi/bhl-web:latest -t amixsi/bhl-web:5.5 -t amixsi/bhl-web:5 .
+- docker build -t amixsi/bhl-web:latest -t amixsi/bhl-web:5.6 -t amixsi/bhl-web:5 .
 
 script:
 - docker run --rm -it amixsi/bhl-web bash --version
